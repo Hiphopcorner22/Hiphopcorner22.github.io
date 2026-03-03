@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dark Side Tech</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-row">
+      <div class="brand">
+        <div>
+          <div class="brand-name">Dark Side Tech</div>
+          <div class="brand-sub">delivery via email</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="search">
+          <input id="searchInput" type="search" placeholder="Search cards…" autocomplete="off" />
+        </div>
+
+        <button id="cartBtn" class="btn btn-primary" type="button">
+          Cart <span id="cartCount" class="pill">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Buy discounted gift cards</h1>
+      <p>
+        Choose a gift card and balance, add to cart, and checkout. You’ll get Skrill/Bitcoin payment instructions.
+        Once payment is verified, delivery happens via email.
+      </p>
+     <!-- <div class="note">
+        <strong>Starter build:</strong> This is the storefront + cart + manual-payment checkout screen.
+        You’ll add order tracking, fraud controls, and delivery automation later.
+      </div> -->
+    </section>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <span class="muted">Showing</span>
+        <span id="resultsCount" class="mono">0</span>
+        <span class="muted">items</span>
+      </div>
+
+      <div class="toolbar-right">
+        <label class="select">
+          <span class="muted">Currency</span>
+          <select id="currencySelect">
+            <option value="USD" selected>USD ($)</option>
+            <option value="ZAR">ZAR (R)</option>
+          </select>
+        </label>
+
+        <label class="select">
+          <span class="muted">Sort</span>
+          <select id="sortSelect">
+            <option value="featured" selected>Featured</option>
+            <option value="low">Lowest price</option>
+            <option value="high">Highest price</option>
+            <option value="az">A → Z</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <!-- SHOP GRID -->
+    <section id="grid" class="grid" aria-label="Gift cards grid"></section>
+
+    <!-- CHECKOUT SECTION -->
+    <section id="checkoutSection" class="checkout hidden" aria-label="Checkout section">
+      <div class="checkout-card">
+        <div class="checkout-head">
+          <h2>Checkout</h2>
+          <button id="backToShopBtn" class="btn" type="button">Back to shop</button>
+        </div>
+
+        <p class="muted">
+          This page generates an Order ID and shows manual payment instructions.
+          You verify payment, then deliver the code via email.
+        </p>
+
+        <div class="two-col">
+          <div class="panel">
+            <h3>Your order</h3>
+            <div id="checkoutSummary" class="muted"></div>
+
+            <div class="field">
+              <span class="label">Buyer email</span>
+              <input id="buyerEmail" type="email" placeholder="you@example.com" />
+            </div>
+
+            <div class="field">
+              <span class="label">Recipient email</span>
+              <input id="recipientEmail" type="email" placeholder="recipient@example.com" />
+            </div>
+
+            <div class="field">
+              <span class="label">Message (optional)</span>
+              <textarea id="giftMessage" rows="3" placeholder="Enjoy your gift!"></textarea>
+            </div>
+
+            <button id="generateOrderBtn" class="btn btn-primary btn-block" type="button">
+              Generate Order ID & Payment Instructions
+            </button>
+
+            <div class="note small">
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Payment instructions</h3>
+
+            <div class="policy">
+              <h4>Important policy</h4>
+              <ul>
+                <li><strong>Payment must include your Order ID in the reference (Skrill).</strong></li>
+                <li><strong>BTC orders are fulfilled after <span id="confText">X</span> confirmations.</strong></li>
+                <li><strong>Underpayments are not fulfilled.</strong></li>
+                <li><strong>Overpayments are credited (or refunded minus fees).</strong></li>
+                <li><strong>Delivery can take up to <span id="deliveryText">X</span> hours.</strong></li>
+              </ul>
+            </div>
+
+            <div id="paymentBox" class="payment-box muted">
+              Generate an Order ID to view payment details.
+            </div>
+
+            <div class="note small">
+              <strong>Please Note:</strong> verified via Skrill / blockchain explorer.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- CART DRAWER -->
+  <div id="overlay" class="overlay hidden" aria-hidden="true"></div>
+
+  <aside id="cartDrawer" class="drawer hidden" aria-label="Cart drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <h2>Your cart</h2>
+      <button id="closeCartBtn" class="icon-btn" aria-label="Close cart">✕</button>
+    </div>
+
+    <div id="cartItems" class="drawer-body"></div>
+
+    <div class="drawer-footer">
+      <div class="totals">
+        <div class="row">
+          <span class="muted">Subtotal</span>
+          <span id="subtotal" class="mono">$0.00</span>
+        </div>
+        <div class="row">
+          <span class="muted">Delivery</span>
+          <span class="mono">Email</span>
+        </div>
+        <div class="row total">
+          <span>Total</span>
+          <span id="total" class="mono">$0.00</span>
+        </div>
+      </div>
+
+      <button id="checkoutBtn" class="btn btn-primary btn-block" type="button">
+        Proceed to checkout
+      </button>
+
+      <p class="fineprint">
+        You’ll get payment instructions next.
+      </p>
+    </div>
+  </aside>
+
+  <!-- PRODUCT MODAL -->
+  <div id="productModal" class="modal hidden" aria-hidden="true" role="dialog" aria-label="Product modal">
+    <div class="modal-card">
+      <div class="modal-top">
+        <h3 id="modalTitle">Card</h3>
+        <button id="closeModalBtn" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-content">
+        <img id="modalImg" class="modal-img" alt="" />
+        <p id="modalDesc" class="muted"></p>
+
+        <div class="modal-controls">
+          <label class="field">
+            <span class="label">Card value (balance)</span>
+            <select id="denominationSelect"></select>
+          </label>
+
+          <label class="field">
+            <span class="label">Quantity</span>
+            <div class="qty">
+              <button id="decQty" class="qty-btn" type="button">−</button>
+              <input id="qtyInput" type="number" min="1" value="1" />
+              <button id="incQty" class="qty-btn" type="button">+</button>
+            </div>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <div class="price-line">
+            <span class="muted">price</span>
+            <span id="modalPrice" class="mono">$0.00</span>
+          </div>
+
+          <button id="addToCartBtn" class="btn btn-primary" type="button">
+            Add to cart
+          </button>
+        </div>
+
+        <div class="note small">
+          <strong>Auto delivery:</strong> Codes are emailed after payment is verified.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
