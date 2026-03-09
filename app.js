@@ -154,9 +154,9 @@ const products = [
     priceMap: {
       50: 25,
       100: 50,
-      500: 250,
-      1000: 500,
-      2000: 1000,
+      500: 100,
+      1000: 150,
+      2000: 300,
     },
     inStock: true,
   },
@@ -171,8 +171,8 @@ const products = [
     priceMap: {
       50: 25,
       100: 50,
-      500: 250,
-      1000: 500,
+      500: 100,
+      1000: 150,
       2000: 1000,
     },
     inStock: true,
@@ -674,4 +674,5 @@ document.addEventListener("keydown", (e) => {
 currencySelect.value = currentCurrency;
 sortSelect.value = sortMode;
 renderGrid();
+
 renderCart();
