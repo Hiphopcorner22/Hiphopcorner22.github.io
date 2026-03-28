@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VORTEX | Premium Streaming</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+        <div class="logo" onclick="location.reload()">
+            <span class="logo-vortex">VORTEX</span><span class="logo-cinema">CINEMA</span>
+        </div>
+        
+        <div class="nav-center">
+            <button class="nav-link" onclick="switchCategory('all')">Home</button>
+            <button class="nav-link" onclick="switchCategory('movie')">Movies</button>
+            <button class="nav-link" onclick="switchCategory('tv')">TV Shows</button>
+            <button class="nav-link" onclick="switchCategory('anime')">Anime</button>
+        </div>
+
+        <div class="nav-right">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search...">
+                <button id="searchBtn">🔍</button>
+            </div>
+            <div class="profile-trigger" onclick="toggleSidebar()">
+                <div class="avatar">V</div>
+                <span>Menu</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>My Library</h2>
+            <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <h3>Continue Watching</h3>
+                    <span class="count-badge" id="continueCount">0</span>
+                </div>
+                <div id="continueList" class="vertical-list"></div>
+            </div>
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <h3>My Watchlist</h3>
+                    <span class="count-badge" id="watchlistCount">0</span>
+                </div>
+                <div id="watchlistList" class="vertical-list"></div>
+                <button class="clear-btn" onclick="clearData('vortex_watchlist')">Clear Watchlist</button>
+            </div>
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <h3>Watch History</h3>
+                    <span class="count-badge" id="historyCount">0</span>
+                </div>
+                <div id="historyList" class="vertical-list"></div>
+                <button class="clear-btn" onclick="clearData('vortex_history')">Clear History</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="heroSection">
+        <div class="hero-backdrop" id="heroBackdrop"></div>
+        <div class="hero-content">
+            <span class="trending-badge" id="heroBadge">#1 TRENDING</span>
+            <h1 id="activeTitle">VORTEX CINEMA</h1>
+            <p id="activeDesc">Welcome to premium streaming</p>
+            
+            <div class="hero-meta" id="heroMeta"></div>
+            
+            <div id="heroActions" class="hero-btns"></div>
+            
+            <div id="controls" class="controls-area" style="display:none;">
+                <div class="selector-group">
+                    <span>Season</span>
+                    <div id="seasonContainer" class="chip-container"></div>
+                </div>
+                <div class="selector-group">
+                    <span>Episode</span>
+                    <div id="episodeContainer" class="chip-container"></div>
+                </div>
+            </div>
+
+            <div id="animeControls" class="anime-controls" style="display:none;">
+                <div class="selector-group">
+                    <span>Audio</span>
+                    <div class="audio-buttons">
+                        <button class="audio-btn active" onclick="setAnimeAudio('sub')">Sub</button>
+                        <button class="audio-btn" onclick="setAnimeAudio('dub')">Dub</button>
+                    </div>
+                </div>
+                <div class="selector-group">
+                    <span>Season</span>
+                    <div id="animeSeasonContainer" class="chip-container"></div>
+                </div>
+                <div class="selector-group">
+                    <span>Episode</span>
+                    <div id="animeEpisodeContainer" class="chip-container"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PLAYER OVERLAY -->
+    <div id="playerOverlay" class="player-overlay" style="display:none;">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <div class="playing-info">
+                    <h2 id="playingTitle">Now Playing</h2>
+                    <div class="server-wrapper">
+                        <span>Server:</span>
+                        <select id="serverSelect" onchange="changeServer(this.value)">
+                            <option value="vidking">Vidking (HD)</option>
+                            <option value="vidsrc">Vidsrc (4K)</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="close-player-btn" onclick="closePlayer()">✕ Close</button>
+            </div>
+            <div class="player-wrapper">
+                <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+            </div>
+            <div class="player-controls">
+                <button class="control-btn" onclick="previousEpisode()">⬅ Previous</button>
+                <button class="control-btn" onclick="nextEpisode()">Next ➡</button>
+                <button class="control-btn" id="autoplayBtn" onclick="toggleAutoplay()">Autoplay: ON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENT SECTIONS -->
+    <section class="content-section">
+        <!-- SEARCH RESULTS -->
+        <div id="dynamicSection" style="display:none;">
+            <h2 class="row-title" id="dynamicTitle">Search Results</h2>
+            <div class="row-container">
+                <div class="grid" id="dynamicGrid"></div>
+            </div>
+        </div>
+
+        <!-- TRENDING -->
+        <div id="trendingSection">
+            <h2 class="row-title">🔥 Trending Now</h2>
+            <div class="row-container">
+                <button class="handle left-handle" onclick="scrollRow('trendingGrid', -1)">‹</button>
+                <div class="grid" id="trendingGrid"></div>
+                <button class="handle right-handle" onclick="scrollRow('trendingGrid', 1)">›</button>
+            </div>
+        </div>
+
+        <!-- MOVIES -->
+        <div id="movieSection">
+            <h2 class="row-title">🎬 Popular Movies</h2>
+            <div class="row-container">
+                <button class="handle left-handle" onclick="scrollRow('movieGrid', -1)">‹</button>
+                <div class="grid" id="movieGrid"></div>
+                <button class="handle right-handle" onclick="scrollRow('movieGrid', 1)">›</button>
+            </div>
+        </div>
+
+        <!-- TV SHOWS -->
+        <div id="tvSection">
+            <h2 class="row-title">📺 Popular TV Series</h2>
+            <div class="row-container">
+                <button class="handle left-handle" onclick="scrollRow('tvGrid', -1)">‹</button>
+                <div class="grid" id="tvGrid"></div>
+                <button class="handle right-handle" onclick="scrollRow('tvGrid', 1)">›</button>
+            </div>
+        </div>
+
+        <!-- ANIME -->
+        <div id="animeSection">
+            <h2 class="row-title">🌸 Trending Anime</h2>
+            <div class="row-container">
+                <button class="handle left-handle" onclick="scrollRow('animeGrid', -1)">‹</button>
+                <div class="grid" id="animeGrid"></div>
+                <button class="handle right-handle" onclick="scrollRow('animeGrid', 1)">›</button>
+            </div>
+        </div>
+
+        <!-- TOP RATED -->
+        <div id="topRatedSection">
+            <h2 class="row-title">⭐ Top Rated</h2>
+            <div class="row-container">
+                <button class="handle left-handle" onclick="scrollRow('topRatedGrid', -1)">‹</button>
+                <div class="grid" id="topRatedGrid"></div>
+                <button class="handle right-handle" onclick="scrollRow('topRatedGrid', 1)">›</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
